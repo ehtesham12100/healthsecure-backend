@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
-from ..database import vulnerabilities_collection
-from ..auth_utils import get_current_user, require_admin
+from database import vulnerabilities_collection
+from auth_utils import get_current_user, require_admin
 
 router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
 
