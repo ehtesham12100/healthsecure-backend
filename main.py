@@ -17,7 +17,8 @@ from routes import auth
 app = FastAPI(title="HealthSecure API")
 
 # CORS (ALLOW YOUR REACT APP)
-allow_origins = os.getenv("FRONTEND_URL", "*").split(",")
+raw_origins = os.getenv("FRONTEND_URL", "*").split(",")
+allow_origins = [origin.strip() for origin in raw_origins]
 
 app.add_middleware(
     CORSMiddleware,
