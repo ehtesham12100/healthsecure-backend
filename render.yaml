@@ -3,12 +3,11 @@ services:
     name: healthcare-backend
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: MONGO_URL
         sync: false
       - key: SECRET_KEY
         generateValue: true
       - key: FRONTEND_URL
-        value: https://healthsecure-frontend1.vercel.app
-
+        sync: false
