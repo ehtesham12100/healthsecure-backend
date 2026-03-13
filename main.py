@@ -17,10 +17,23 @@ from routes import auth
 app = FastAPI(title="HealthSecure API")
 
 # CORS (ALLOW YOUR REACT APP)
-raw_origins = os.getenv("FRONTEND_URL", "*").split(",")
-allow_origins = [origin.strip() for origin in raw_origins]
+# Note: allow_origins cannot be ["*"] when allow_credentials=True
+allow_origins = [
+    "https://healthsecure-frontend1.vercel.app",
+    "http://localhost:3000",
+    "http://localhost:8001"
+]
 
-print(f"DEBUG: Allowed Origins: {allow_origins}")
+# Add extra origins from environment variable if they exist
+frontend_url_env = os.getenv("FRONTEND_URL")
+if frontend_url_env:
+    extra = [o.strip() for o in frontend_url_env.split(",") if o.strip() and o.strip() != "*"]
+    allow_origins.extend(extra)
+
+# Ensure uniqueness
+allow_origins = list(set(allow_origins))
+
+print(f"DEBUG: CORS Allowed Origins: {allow_origins}")
 
 app.add_middleware(
     CORSMiddleware,
