@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import Optional
-from database import vulnerabilities_collection
-from auth_utils import get_current_user, require_admin
+from backend.database import vulnerabilities_collection
+from backend.auth_utils import get_current_user, require_admin
 from bson import ObjectId
 
 router = APIRouter(prefix="/vulnerabilities", tags=["Vulnerabilities"])
