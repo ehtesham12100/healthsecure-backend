@@ -20,6 +20,8 @@ app = FastAPI(title="HealthSecure API")
 raw_origins = os.getenv("FRONTEND_URL", "*").split(",")
 allow_origins = [origin.strip() for origin in raw_origins]
 
+print(f"DEBUG: Allowed Origins: {allow_origins}")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allow_origins,
