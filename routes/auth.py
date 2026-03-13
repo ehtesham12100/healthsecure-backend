@@ -1,66 +1,69 @@
-from fastapi import APIRouter, HTTPException
-from database import db
-from auth_utils import verify_password, create_access_token
-from hash_password import get_password_hash
-from pydantic import BaseModel
+import os
+from jose import jwt, JWTError
+from datetime import datetime, timedelta
+from passlib.context import CryptContext
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from backend.database import db
+users_collection = db.users
 
-router = APIRouter(prefix="/auth", tags=["Auth"])
+SECRET_KEY = os.getenv("SECRET_KEY", "mysecretkey123")
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
-class LoginRequest(BaseModel):
-    username: str
-    password: str
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-class RegisterRequest(BaseModel):
-    username: str
-    email: str
-    password: str
+# Security scheme
+security = HTTPBearer()
 
-@router.post("/login")
-def login(user: LoginRequest):
-    db_user = db["users"].find_one({"username": user.username})
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
 
-    if not db_user:
-        raise HTTPException(status_code=400, detail="Invalid username")
+def create_access_token(data: dict):
+    to_encode = data.copy()
+    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-    if not verify_password(user.password, db_user["password"]):
-        raise HTTPException(status_code=400, detail="Invalid password")
-
-    token = create_access_token({"sub": db_user["username"]})
-
-    # Return user info including role
-    return {
-        "access_token": token,
-        "token_type": "bearer",
-        "user": {
-            "username": db_user["username"],
-            "email": db_user.get("email", ""),
-            "role": db_user.get("role", "user")
-        }
-    }
-
-@router.post("/register")
-def register(user: RegisterRequest):
-    # Check if username already exists
-    existing_user = db["users"].find_one({"username": user.username})
-    if existing_user:
-        raise HTTPException(status_code=400, detail="Username already exists")
+def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Verify JWT token and get current user"""
+    token = credentials.credentials
     
-    # Check if email already exists
-    existing_email = db["users"].find_one({"email": user.email})
-    if existing_email:
-        raise HTTPException(status_code=400, detail="Email already exists")
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        
+        if username is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid authentication credentials"
+            )
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication credentials"
+        )
     
-    # Hash password
-    hashed_password = get_password_hash(user.password)
+    # Get user from database
+    user = users_collection.find_one({"username": username})
     
-    # Create new user (default role is "user")
-    new_user = {
-        "username": user.username,
-        "email": user.email,
-        "password": hashed_password,
-        "role": "user"
-    }
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found"
+        )
     
-    db["users"].insert_one(new_user)
+    # Remove password from user dict
+    user.pop("password", None)
+    user["_id"] = str(user["_id"])
     
-    return {"message": "User registered successfully"}
+    return user
+
+def require_admin(current_user: dict = Depends(get_current_user)):
+    """Require admin role for certain operations"""
+    if current_user.get("role") != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin access required"
+        )
+    return current_user
