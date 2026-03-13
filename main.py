@@ -43,6 +43,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.middleware("http")
+async def log_requests(request, call_next):
+    origin = request.headers.get("origin")
+    print(f"DEBUG: Request Origin: {origin}")
+    response = await call_next(request)
+    return response
+
 # Routers
 app.include_router(assets_router)
 app.include_router(vulnerabilities_router)
