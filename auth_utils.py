@@ -4,7 +4,8 @@ from datetime import datetime, timedelta
 from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from database import users_collection
+from backend.database import db
+users_collection = db.users
 
 SECRET_KEY = os.getenv("SECRET_KEY", "mysecretkey123")
 ALGORITHM = "HS256"
