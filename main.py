@@ -16,29 +16,33 @@ from routes import auth
 
 app = FastAPI(title="HealthSecure API")
 
-# CORS (ALLOW YOUR REACT APP)
-# Note: allow_origins cannot be ["*"] when allow_credentials=True
-allow_origins = [
-    "https://healthsecure-frontend1.vercel.app",
-    "http://localhost:3000",
-    "http://localhost:8001"
-]
+from fastapi import FastAPI, Request, Response
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
-# Add extra origins from environment variable if they exist
-frontend_url_env = os.getenv("FRONTEND_URL")
-if frontend_url_env:
-    extra = [o.strip() for o in frontend_url_env.split(",") if o.strip() and o.strip() != "*"]
-    allow_origins.extend(extra)
+# CORS (ALLOW EVERYTHING FOR DEPLOYMENT)
+# Note: This is the 'Nuclear Option' to fix persistent deployment blocks
+@app.middleware("http")
+async def dynamic_cors_middleware(request: Request, call_next):
+    if request.method == "OPTIONS":
+        response = Response()
+    else:
+        response = await call_next(request)
+    
+    origin = request.headers.get("origin")
+    if origin:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With"
+    
+    return response
 
-# Ensure uniqueness
-allow_origins = list(set(allow_origins))
-
-print(f"DEBUG: CORS Allowed Origins: {allow_origins}")
-
+# Standard middleware as backup
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allow_origins,
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False, # Must be false if origins is *
     allow_methods=["*"],
     allow_headers=["*"],
 )
