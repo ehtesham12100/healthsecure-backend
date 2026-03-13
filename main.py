@@ -89,6 +89,14 @@ def custom_openapi():
 # Generate OpenAPI schema with auth
 app.openapi = custom_openapi
 
+@app.get("/api/health")
+def health_check():
+    return {
+        "status": "healthy",
+        "allowed_origins": allow_origins,
+        "env_frontend_url": os.getenv("FRONTEND_URL")
+    }
+
 @app.get("/")
 def root():
     return {"message": "HealthSecure Backend is running 🚀"}
