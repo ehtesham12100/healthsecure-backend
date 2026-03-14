@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import List
-from backend.database import assets_collection
-from backend.auth_utils import get_current_user, require_admin
+from database import assets_collection
+from auth_utils import get_current_user, require_admin
 
 router = APIRouter(prefix="/assets", tags=["Assets"])
 
