@@ -1,13 +1,9 @@
 from pymongo import MongoClient
-import os
-
 # ============================================
-# MONGODB ATLAS CONNECTION (CLOUD)
+# MONGODB ATLAS CONNECTION (CLOUD) - HARDCODED
 # ============================================
 
-# Primary: Get from environment variable (for production/Render)
-# Fallback: Use hardcoded URL (for development/when env not set)
-MONGO_URL = os.getenv("MONGO_URL", "mongodb+srv://ahmed_db1:Ul00m%239XqP%2172%40Db@cluster0.3i5uuip.mongodb.net/healthcare?retryWrites=true&w=majority")
+MONGO_URL = "mongodb+srv://ahmed_db1:Ul00m%239XqP%2172%40Db@cluster0.3i5uuip.mongodb.net/healthcare?retryWrites=true&w=majority"
 
 try:
     # Configure MongoDB client with timeout settings
