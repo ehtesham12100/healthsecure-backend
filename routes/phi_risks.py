@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
-from backend.database import phi_risks_collection
-from backend.auth_utils import get_current_user, require_admin
+from database import phi_risks_collection
+from auth_utils import get_current_user, require_admin
 from bson import ObjectId
 
 router = APIRouter(prefix="/phi-risks", tags=["PHI Risks"])
