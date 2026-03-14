@@ -3,7 +3,7 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from pymongo import MongoClient
-from hash_password import get_password_hash
+from auth_utils import get_password_hash
 import os
 
 # Use environment variable or default to MongoDB Atlas
