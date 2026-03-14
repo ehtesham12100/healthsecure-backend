@@ -1,5 +1,11 @@
 import sys
 import os
+
+# Add the 'backend' directory to sys.path to resolve imports when running from the root on Render
+backend_dir = os.path.dirname(os.path.abspath(__file__))
+if backend_dir not in sys.path:
+    sys.path.append(backend_dir)
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
