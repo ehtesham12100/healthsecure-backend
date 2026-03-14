@@ -4,14 +4,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 
-# Absolute imports from the backend package
-from backend.routes.dashboard import router as dashboard_router
-from backend.routes.assets import router as assets_router
-from backend.routes.vulnerabilities import router as vulnerabilities_router
-from backend.routes.compliance import router as compliance_router
-from backend.routes.phi_risks import router as phi_risks_router
-from backend.routes.anomalies import router as anomalies_router
-from backend.routes import auth
+# Imports
+from routes.dashboard import router as dashboard_router
+from routes.assets import router as assets_router
+from routes.vulnerabilities import router as vulnerabilities_router
+from routes.compliance import router as compliance_router
+from routes.phi_risks import router as phi_risks_router
+from routes.anomalies import router as anomalies_router
+from routes import auth
 
 app = FastAPI(title="HealthSecure API")
 
