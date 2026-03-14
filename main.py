@@ -21,18 +21,12 @@ from routes import auth
 
 app = FastAPI(title="HealthSecure API")
 
-# Standard CORS Configuration
+# Standard CORS Configuration - HARDCODED
 allow_origins = [
     "https://healthsecure-frontend1.vercel.app",
-    "http://localhost:3000",
+    "http://localhost:3000", 
     "http://localhost:8001"
 ]
-
-# Add FRONTEND_URL if provided (stripping whitespace and removing *)
-env_origins = os.getenv("FRONTEND_URL", "")
-if env_origins:
-    extra = [o.strip() for o in env_origins.split(",") if o.strip() and o.strip() != "*"]
-    allow_origins.extend(extra)
 
 # Remove duplicates
 allow_origins = list(set(allow_origins))
@@ -89,8 +83,7 @@ app.openapi = custom_openapi
 def health_check():
     return {
         "status": "healthy",
-        "origins": allow_origins,
-        "env_frontend": os.getenv("FRONTEND_URL")
+        "origins": allow_origins
     }
 
 @app.get("/")
