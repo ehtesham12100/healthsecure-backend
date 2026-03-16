@@ -13,9 +13,7 @@ try:
         connectTimeoutMS=5000,
     )
     
-    # Test the connection
-    client.admin.command('ping')
-    print("Successfully connected to MongoDB Atlas!")
+    print("MongoDB Atlas client initialized")
     
     # Get database name from connection string
     db_name = MONGO_URL.split('/')[-1].split('?')[0] if '/' in MONGO_URL else "healthcare"
