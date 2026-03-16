@@ -25,6 +25,7 @@ app = FastAPI(title="HealthSecure API")
 # Standard CORS Configuration
 allow_origins = [
     "https://healthsecure-frontend1.vercel.app",
+    "https://healthsecure-frontend1-git-main-ehtesham12100s-projects.vercel.app",
     "http://localhost:3000",
     "http://localhost:8001"
 ]
