@@ -21,15 +21,12 @@ from routes import auth
 
 app = FastAPI(title="HealthSecure API")
 
-# Standard CORS Configuration - HARDCODED
+# Standard CORS Configuration
 allow_origins = [
     "https://healthsecure-frontend1.vercel.app",
-    "http://localhost:3000", 
+    "http://localhost:3000",
     "http://localhost:8001"
 ]
-
-# Remove duplicates
-allow_origins = list(set(allow_origins))
 
 print(f"DEBUG: Active CORS Origins: {allow_origins}")
 
